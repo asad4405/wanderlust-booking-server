@@ -1,0 +1,34 @@
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config';
+import { MongoClient } from 'mongodb';
+
+const app = express();
+const PORT = 8000;
+
+// middleware
+app.use(cors());
+app.use(express.json());
+
+const client = new MongoClient(`${process.env.MONGODB_URL}`);
+
+export async function connectToMongoDB() {
+    try {
+        await client.connect();
+        return client;
+    } catch (err) {
+        console.dir(err);
+    }
+}
+
+const connectedClient = await connectToMongoDB();
+const db = connectedClient.db('wanderlust');
+const destinationCollection = db.collection('destination');
+
+app.get('/', (req, res) => {
+    res.send({ message: 'Server is running' });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running. Port:${PORT}`);
+})
