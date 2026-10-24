@@ -4,7 +4,7 @@ import 'dotenv/config';
 import { MongoClient } from 'mongodb';
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 // middleware
 app.use(cors());
@@ -27,6 +27,12 @@ const destinationCollection = db.collection('destination');
 
 app.get('/', (req, res) => {
     res.send({ message: 'Server is running' });
+});
+
+app.post('/add-destination', async(req,res) => {
+    const data = req.body;
+    const result = await destinationCollection.insertOne(data);
+    res.send(result);
 });
 
 app.listen(PORT, () => {
