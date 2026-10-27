@@ -24,6 +24,7 @@ export async function connectToMongoDB() {
 const connectedClient = await connectToMongoDB();
 const db = connectedClient.db('wanderlust');
 const destinationCollection = db.collection('destination');
+const bookingCollection = db.collection('bookings');
 
 app.get('/', (req, res) => {
     res.send({ message: 'Server is running' });
@@ -67,6 +68,15 @@ app.delete('/destination/:id', async (req, res) => {
     res.send(result);
     
 });
+
+// ============= bookings ========== //
+app.post('/booking', async(req,res) => {
+    const data = req.body;
+    const result = await bookingCollection.insertOne(data);
+    res.send(result);
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server running. Port:${PORT}`);
 })
