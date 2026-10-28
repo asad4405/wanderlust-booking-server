@@ -30,25 +30,25 @@ app.get('/', (req, res) => {
     res.send({ message: 'Server is running' });
 });
 
-app.post('/add-destination', async(req,res) => {
+app.post('/add-destination', async (req, res) => {
     const data = req.body;
     const result = await destinationCollection.insertOne(data);
     res.send(result);
 });
 
-app.get('/destinations', async(req,res) => {
+app.get('/destinations', async (req, res) => {
     const result = await destinationCollection.find().toArray();
     res.send(result);
 });
 
-app.get('/destination/:id', async(req,res) => {
+app.get('/destination/:id', async (req, res) => {
     const id = req.params.id;
-    const query = {_id: new ObjectId(id)};
+    const query = { _id: new ObjectId(id) };
     const result = await destinationCollection.findOne(query);
     res.send(result);
 });
 
-app.patch('/destination/:id', async(req,res) => {
+app.patch('/destination/:id', async (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectId(id) };
     const updatedData = req.body;
@@ -66,15 +66,21 @@ app.delete('/destination/:id', async (req, res) => {
     const query = { _id: new ObjectId(id) };
     const result = await destinationCollection.deleteOne(query);
     res.send(result);
-    
+
 });
 
 // ============= bookings ========== //
-app.post('/booking', async(req,res) => {
+app.post('/booking', async (req, res) => {
     const data = req.body;
     const result = await bookingCollection.insertOne(data);
     res.send(result);
 });
+
+app.get('/my-bookings/:email', async (req, res) => {
+    const { email } = req.params;
+    const result = await bookingCollection.find({email:email}).toArray();
+    res.send(result);
+})
 
 
 app.listen(PORT, () => {
