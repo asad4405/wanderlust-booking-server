@@ -80,7 +80,13 @@ app.get('/my-bookings/:email', async (req, res) => {
     const { email } = req.params;
     const result = await bookingCollection.find({email:email}).toArray();
     res.send(result);
-})
+});
+
+app.delete('/my-bookings/:id', async(req,res) => {
+    const {id} = req.params;
+    const result = await bookingCollection.deleteOne({_id: id});
+    res.send(result);
+});
 
 
 app.listen(PORT, () => {
