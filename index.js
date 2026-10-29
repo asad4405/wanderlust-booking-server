@@ -27,22 +27,26 @@ const db = connectedClient.db('wanderlust');
 const destinationCollection = db.collection('destination');
 const bookingCollection = db.collection('bookings');
 
-const verifyToken = async(req,res) => {
-    const authHeader = req.headers.authorization;
-    if(!authHeader){
-        return res.status(401).send({message: "Unauthorized"});
-    }
-    const token = authHeader.split(" ")[1];
-
-    const JWKS = createRemoteJWKSet(new URL('http://localhost:3000/api/auth/jwks'));
-    const {payload } = await jwtVerify(token, JWKS);
+const verifyToken = async (req, res, next) => {
     try {
-        next();
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).send({ message: "Unauthorized" });
+        }
+        const token = authHeader.split(" ")[1];
+
+        if (!token) {
+            return res.status(401).send({ message: "Unauthorized" });
+        }
+
+        const JWKS = createRemoteJWKSet(new URL('http://localhost:3000/api/auth/jwks'));
+        const { payload } = await jwtVerify(token, JWKS);
+        next(); 
     } catch (error) {
-         return res.status(500).send({message: "Server Error"});
+        console.error("Token Verification Error:", error.message);
+        return res.status(401).send({ message: "Invalid token" });
     }
-    
-}
+};
 
 app.get('/', (req, res) => {
     res.send({ message: 'Server is running' });
